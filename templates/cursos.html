@@ -18,12 +18,18 @@
 				</a>
 				</td>
 
+
 				<td>
 				<a href="/cursos/editar/{{ curso.codigo }}" title="Editar"> 
 					<font color="red"><i class="small material-icons">edit</i> </font>
 				</a>
 				</td>
 
+				<td>
+				<a href="/prerequisitos/{{ curso.codigo }}" title="prerequisitos"> 
+					<font color="red"><i class="small material-icons">library_books</i></font>
+				</a>
+				</td>
 				{% if puedoeliminar %}
 				<!--Agregar funcionalidad para agregar profesores a un curso-->
 				<td>

@@ -49,6 +49,11 @@ class Factory:
 				return ActividadFForm(request.POST)
 			else:
 				return ActividadFForm()
+		elif(tipo == 'preRequisito'):
+			if(request != None):
+				return PreRequisitoForm(request.POST)
+			else:
+				return PreRequisitoForm()
 
 	
 # Create your views here.
@@ -951,12 +956,86 @@ def agregarIndicador(request, codigo_resultado):
 	else:
 		return redirect('/')
 
-def modificarIndicador(request, codigo_resultado):#acomodar despues
+def consultarIndicador(request, codigo_indicador):
 	if(request.user.is_authenticated):
-		return redirect('/')
-
+		try:
+			indicador = Indicador.objects.get(id = codigo_indicador)
+			resultado = Resultado.objects.get(id = indicador.resultado_id)
+			competencia= Competencia.objects.get(id=resultado.competencia_id)
+			curso = Curso.objects.get(codigo=competencia.curso_id)
+		except resultado.DoesNotExist:
+			template = loader.get_template('error.html') #---------Buscame-------------
+			context = { #Diccionario que se le pasa al HTML
+				'error': "El Indicador de Aprendizaje no Existe",
+			}
+			return HttpResponse(template.render(context, request))
+		form = IndicadorForm(instance = indicador)
+		if((request.user.profile.tipo == 'profesor' and request.user.id == curso.docente_id) or request.user.profile.tipo == 'decano' or request.user.profile.tipo == 'director'):
+			template = loader.get_template('verIndicador.html')
+			form.fields['resultado'].initial = indicador.resultado_id 
+			form.fields['resultado'].widget = forms.HiddenInput()
+			context = {
+				'form': form,
+				'indicador': indicador,
+			}
+			return HttpResponse(template.render(context, request))
+		else:
+			template = loader.get_template('error.html') #---------Buscame-------------
+			context = { #Diccionario que se le pasa al HTML
+				'error': "No esta asignado a este curso",
+			}
+			return HttpResponse(template.render(context, request))
 	else:
 		return redirect('/')
+
+
+def modificarIndicador(request, codigo_indicador):#acomodar despues
+	if(request.user.is_authenticated):
+		try:
+			indicador = Indicador.objects.get(id = codigo_indicador)
+			resultado = Resultado.objects.get(id = indicador.resultado_id)
+			competencia= Competencia.objects.get(id=resultado.competencia_id)
+			curso = Curso.objects.get(codigo=competencia.curso_id)
+		except resultado.DoesNotExist:
+			template = loader.get_template('error.html') #---------Buscame-------------
+			context = { #Diccionario que se le pasa al HTML
+				'error': "El Indicador de Aprendizaje no Existe",
+			}
+			return HttpResponse(template.render(context, request))
+		if(request.user.profile.tipo == 'profesor' and request.user.id == curso.docente_id):
+			if(request.method == 'POST'):
+				form = IndicadorForm(data = request.POST or None , instance=indicador)
+				form.fields['resultado'].initial = indicador.resultado_id 
+				form.fields['resultado'].widget = forms.HiddenInput()
+				if form.is_valid():
+					form.save()
+					return HttpResponseRedirect('/cursos')
+				else:
+					template = loader.get_template('modificarIndicador.html')
+					context = {
+						'form' : form,
+						'indicador' : indicador
+					}
+					return HttpResponse(template.render(context, request))
+			else:
+				form = IndicadorForm(instance = indicador)
+				form.fields['resultado'].initial = indicador.resultado_id 
+				form.fields['resultado'].widget = forms.HiddenInput()
+				template = loader.get_template('modificarIndicador.html')
+				context = {
+					'form' : form,
+					'indicador' : indicador
+				}
+			return HttpResponse(template.render(context, request))
+		else:
+			template = loader.get_template('error.html') #---------Buscame-------------
+			context = { #Diccionario que se le pasa al HTML
+				'error': "No esta asignado a este curso",
+			}
+			return HttpResponse(template.render(context, request))
+	else:
+		return redirect('/')
+
 
 def eliminarIndicador(request, codigo_indicador):
 	if(request.user.is_authenticated):
@@ -1059,6 +1138,193 @@ def agregarActividadesF(request, codigo_resultado):
 			template = loader.get_template('error.html') #---------Buscame-------------
 			context = { #Diccionario que se le pasa al HTML
 				'error': "No esta asignado a este indicador",
+			}
+			return HttpResponse(template.render(context, request))
+	else:
+		return redirect('/')
+
+def consultarActividadF(request, codigo_actividad):
+	if(request.user.is_authenticated):
+		try:
+			actividad = ActividadF.objects.get(id = codigo_actividad)
+			resultado = Resultado.objects.get(id = actividad.resultado_id)
+			competencia= Competencia.objects.get(id=resultado.competencia_id)
+			curso = Curso.objects.get(codigo=competencia.curso_id)
+		except actividad.DoesNotExist:
+			template = loader.get_template('error.html') #---------Buscame-------------
+			context = { #Diccionario que se le pasa al HTML
+				'error': "El Indicador de Aprendizaje no Existe",
+			}
+			return HttpResponse(template.render(context, request))
+		form = ActividadFForm(instance = actividad)
+		if((request.user.profile.tipo == 'profesor' and request.user.id == curso.docente_id) or request.user.profile.tipo == 'decano' or request.user.profile.tipo == 'director'):
+			template = loader.get_template('verActividad.html')
+			form.fields['resultado'].initial = actividad.resultado_id 
+			form.fields['resultado'].widget = forms.HiddenInput()
+			context = {
+				'form': form,
+				'actividad': actividad,
+			}
+			return HttpResponse(template.render(context, request))
+		else:
+			template = loader.get_template('error.html') #---------Buscame-------------
+			context = { #Diccionario que se le pasa al HTML
+				'error': "No esta asignado a este curso",
+			}
+			return HttpResponse(template.render(context, request))
+	else:
+		return redirect('/')
+
+def modificarActividadF(request, codigo_actividad):#acomodar despues
+	if(request.user.is_authenticated):
+		try:
+			actividad = ActividadF.objects.get(id = codigo_actividad)
+			resultado = Resultado.objects.get(id = actividad.resultado_id)
+			competencia= Competencia.objects.get(id=resultado.competencia_id)
+			curso = Curso.objects.get(codigo=competencia.curso_id)
+		except actividad.DoesNotExist:
+			template = loader.get_template('error.html') #---------Buscame-------------
+			context = { #Diccionario que se le pasa al HTML
+				'error': "El Indicador de Aprendizaje no Existe",
+			}
+			return ActividadFForm(template.render(context, request))
+		if(request.user.profile.tipo == 'profesor' and request.user.id == curso.docente_id):
+			if(request.method == 'POST'):
+				form = IndicadorForm(data = request.POST or None , instance=actividad)
+				form.fields['resultado'].initial = actividad.resultado_id 
+				form.fields['resultado'].widget = forms.HiddenInput()
+				if form.is_valid():
+					form.save()
+					return HttpResponseRedirect('/cursos')
+				else:
+					template = loader.get_template('modificarIndicador.html')
+					context = {
+						'form' : form,
+						'actividad' : actividad
+					}
+					return HttpResponse(template.render(context, request))
+			else:
+				form = ActividadFForm(instance = actividad)
+				form.fields['resultado'].initial = actividad.resultado_id 
+				form.fields['resultado'].widget = forms.HiddenInput()
+				template = loader.get_template('modificarIndicador.html')
+				context = {
+					'form' : form,
+					'actividad' : actividad
+				}
+			return HttpResponse(template.render(context, request))
+		else:
+			template = loader.get_template('error.html') #---------Buscame-------------
+			context = { #Diccionario que se le pasa al HTML
+				'error': "No esta asignado a este curso",
+			}
+			return HttpResponse(template.render(context, request))
+	else:
+		return redirect('/')
+
+def eliminarActividadF(request, codigo_actividad):
+	if(request.user.is_authenticated):
+		try:
+			actividad = ActividadF.objects.get(id = codigo_actividad)
+			resultado = Resultado.objects.get(id = actividad.resultado_id)
+			competencia= Competencia.objects.get(id=resultado.competencia_id)
+			curso = Curso.objects.get(codigo=competencia.curso_id)
+		except actividad.DoesNotExist:
+			template = loader.get_template('error.html') #---------Buscame-------------
+			context = { #Diccionario que se le pasa al HTML
+				'error': "El Indicador de Aprendizaje no Existe",
+			}
+			return HttpResponse(template.render(context, request))
+		if(request.user.profile.tipo == 'profesor' and request.user.id == curso.docente_id):
+			if(request.method == 'POST'):
+				opcion = request.POST.get('opcion', None)
+				if(opcion == 'si'):
+					actividad.delete()
+				return redirect('/cursos')
+			else:
+				template = loader.get_template('confirmar.html')
+				texto = "¿Seguro que desea borrar La Actividad de Formacion ?:"
+				context = { #Diccionario que se le pasa al HTML
+				'texto' : texto
+				}
+				return HttpResponse(template.render(context, request))
+		else:
+			template = loader.get_template('error.html') #---------Buscame-------------
+			context = { #Diccionario que se le pasa al HTML
+				'error': "No esta asignado a este curso",
+			}
+			return HttpResponse(template.render(context, request))
+	else:
+		return redirect('/')
+
+
+
+#----------------------CRUD Prerequisitos--------------------------------#
+
+def gestionarPreRequisitos(request, codigo_curso):
+	if(request.user.is_authenticated):
+		try:
+			curso = Curso.objects.get(codigo=codigo_curso)
+		except Curso.DoesNotExist:
+			template = loader.get_template('error.html') #---------Buscame-------------
+			context = { #Diccionario que se le pasa al HTML
+				'error': "El curso no Existe",
+			}
+			return HttpResponse(template.render(context, request))
+		if((request.user.profile.tipo == 'profesor' and request.user.id == curso.docente_id) or request.user.profile.tipo == 'director' or request.user.profile.tipo == 'decano'):
+				try:
+					prerequisitos = curso.prerequisitos_set.all()
+				except Exception as e:
+					raise
+
+				template = loader.get_template('preRequisitos.html')
+				context = {
+					'curso' : curso,
+					'prerequisitos' : prerequisitos,
+					'puedogestionar' : request.user.profile.tipo == 'profesor'
+				}
+				return HttpResponse(template.render(context, request))
+		else:
+			return redirect('/')
+	else:
+		return redirect('/')
+
+def agregarPreRequisitos(request, codigo_curso):
+	factory = Factory()
+	if(request.user.is_authenticated):
+		try:
+			curso = Curso.objects.get(codigo=codigo_curso)
+		except Curso.DoesNotExist:
+			template = loader.get_template('error.html') #---------Buscame-------------
+			context = { #Diccionario que se le pasa al HTML
+				'error': "El curso no Existe",
+			}
+			return HttpResponse(template.render(context, request))
+		if(request.user.profile.tipo == 'profesor' and request.user.id == curso.docente_id):
+			if(request.method == 'POST'):
+				#agregar una competencia a su curso
+				form = factory.crearFormulario('preRequisito', request)
+				form.fields['curso'].initial = curso.codigo #programa del director
+				form.fields['curso'].widget = forms.HiddenInput()
+				if form.is_valid():
+					preRequisito = form.save()
+					preRequisito.save()
+					return HttpResponseRedirect('/cursos')
+			else:
+				form = factory.crearFormulario('preRequisito')
+				form.fields['curso'].initial = curso.codigo
+				form.fields['curso'].widget = forms.HiddenInput()
+			template = loader.get_template('agregarPreRequisito.html')
+			context = {
+				'form' : form,
+				'curso' : curso
+			}
+			return HttpResponse(template.render(context, request))
+			
+		else:
+			template = loader.get_template('error.html') #---------Buscame-------------
+			context = { #Diccionario que se le pasa al HTML
+				'error': "No esta asignado a este curso",
 			}
 			return HttpResponse(template.render(context, request))
 	else:

@@ -1,0 +1,45 @@
+{% extends "index.html" %}
+
+{% block content %}
+	<h1 style="color:red">
+		Gestion de Pre-requisitos del curso{{curso.nombre}}:
+	</h1>
+	<table border="1">
+		{% if puedogestionar %}
+		<td>
+		<a href="/prerequisitos/new/{{ prerequisito.curso }}" title="Añadir">
+			<font color="red"><i class="small material-icons">library_add</i> </font>
+		</a>
+		<td>
+		{% endif %}
+		{% for prerequisito in prerequisitos %}
+			{% for cur in prerequisito.cursos %}
+				<tr>
+					<td>
+					{{ cur.nombre }} {{ cur.semestre }}
+					</td>
+
+					{#<td>
+					 <a href="/indicadores/consultar/{{indicador.id}}" title="Informacion"> 
+						<font color="red"><i class="small material-icons">info</i></font>
+					</a>
+					</td>
+					{% if puedogestionar %}
+					<!--Agregar funcionalidad para agregar profesores a un curso-->
+					<td>
+					<a href="/indicadores/editar/{{indicador.id}}" title="Editar"> 
+						<font color="red"><i class="small material-icons">edit</i> </font>
+					</a>
+					<td>
+					<a href="/indicadores/eliminar/{{indicador.id}}" title="Eliminar"> 
+						<font color="red"><i color="red" class="small material-icons">delete</i></font>
+					</a> 
+					</td>
+					{% endif %} #}
+				</tr>
+			{% endfor %}
+		{% endfor %}
+		
+	</table>
+
+{% endblock %}

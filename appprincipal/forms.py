@@ -11,6 +11,10 @@ class ProgramaForm(forms.ModelForm):
 		model = Programa
 		fields = '__all__'
 
+class PreRequisitoForm(forms.ModelForm):
+	class Meta:
+		model = PreRequisito
+		fields = '__all__'
 
 class ActividadFForm(forms.ModelForm):
 	class Meta:
@@ -58,3 +62,4 @@ class TipoForm(forms.ModelForm):
 	class Meta:
 		model = Profile
 		fields = ('tipo',)
+

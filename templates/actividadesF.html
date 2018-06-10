@@ -2,7 +2,7 @@
 
 {% block content %}
 	<h1 style="color:red">
-		Gestion de Indicadores de logro del Resultado de Aprendizaje {{resultado.nombre}}:
+		Gestion de Actividades de Formacion del Resultado de Aprendizaje {{resultado.nombre}}
 	</h1>
 	<table border="1">
 		{% if puedogestionar %}
@@ -20,18 +20,17 @@
 				</td>
 
 				<td>
-				<a href="/indicadores/consultar/{{indicador.id}}" title="Informacion"> 
+				<a href="/actividadesF/consultar/{{actividad.id}}" title="Informacion"> 
 					<font color="red"><i class="small material-icons">info</i></font>
 				</a>
 				</td>
 				{% if puedogestionar %}
-				<!--Agregar funcionalidad para agregar profesores a un curso-->
 				<td>
-				<a href="/indicadores/editar/{{indicador.id}}" title="Editar"> 
+				<a href="/actividadesF/editar/{{actividad.id}}" title="Editar"> 
 					<font color="red"><i class="small material-icons">edit</i> </font>
 				</a>
 				<td>
-				<a href="/indicadores/eliminar/{{indicador.id}}" title="Eliminar"> 
+				<a href="/actividadesF/eliminar/{{actividad.id}}" title="Eliminar"> 
 					<font color="red"><i color="red" class="small material-icons">delete</i></font>
 				</a> 
 				</td>

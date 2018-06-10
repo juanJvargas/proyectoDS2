@@ -69,7 +69,7 @@ class Curso(models.Model):
 
 
 class Competencia(models.Model):
-	nombre = models.CharField(max_length=40,)
+	nombre = models.CharField(max_length=40)
 	descripcion = models.TextField(max_length=500, blank=True)
 	curso = models.ForeignKey(Curso, on_delete=models.CASCADE, default=False)
 
@@ -97,6 +97,9 @@ class Indicador(models.Model):
 	resultado= models.ForeignKey(Resultado, on_delete=models.CASCADE, default=False)
 
 class ActividadF(models.Model):
-	nombre = models.CharField(max_length=40,)
+	nombre = models.CharField(max_length=40)
 	descripcion = models.TextField(max_length=500, blank=True)
 	resultado= models.ForeignKey(Resultado, on_delete=models.CASCADE, default=False)
+
+class PreRequisito(models.Model):
+	cursos = models.ManyToManyField(Curso)
