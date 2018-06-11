@@ -7,6 +7,14 @@ from .forms import *
 from django import forms
 from .models import *
 
+
+from django.contrib import messages		
+from django.contrib.auth import update_session_auth_hash		
+from django.contrib.auth.forms import PasswordChangeForm		
+from django.contrib.auth.forms import AdminPasswordChangeForm		
+from django.shortcuts import render, redirect		
+from .filters import UserFilter
+
 class Factory:
 	def crearFormulario(self, tipo, request=None):
 		if(tipo == 'user'):
@@ -80,16 +88,28 @@ def autenticar(request):
 
 def inicio(request):
 	if(request.user.is_authenticated):
-			usuario = request.user
-			form = UserForm(instance=usuario)
-			formT = TipoForm(instance=usuario.profile)
-			template = loader.get_template('verPerfil.html')
-			context = {
-				'texto' : "Información de mi perfil:",
-				'form' : form,
-				'tipo' : formT
-			}
-			return HttpResponse(template.render(context, request))
+		usuario = request.user
+		form = UserForm(instance=usuario)
+		formT = TipoForm(instance=usuario.profile)
+		formPass = PasswordChangeForm(request.user)
+		exitoPass = False
+		if(request.method == 'POST'):
+			formPass = PasswordChangeForm(request.user, request.POST)
+			if formPass.is_valid():
+				user = formPass.save()
+				update_session_auth_hash(request, user)  # Important!
+				exitoPass = True
+				formPass = PasswordChangeForm(request.user)
+		template = loader.get_template('verPerfil.html')
+		context = {
+			'texto' : "Información de mi perfil eee:",
+			'form' : form,
+			'tipo' : formT,
+			'formPass' : formPass,
+			'exitoPass' : exitoPass
+		}
+		return render(request, 'verPerfil.html', context)
+		#return HttpResponse(template.render(context, request))
 	else:
 		return redirect('/login')
 
@@ -129,16 +149,18 @@ def agregarusuario(request):
 def gestionarusuarios(request):
 	if(request.user.is_authenticated):
 		if(request.user.profile.tipo == 'admin'):
-			usuarios = User.objects.order_by('id')
+			perfiles  = Profile.objects.all()
+			user_filter = UserFilter(request.GET, queryset=perfiles)
 			template = loader.get_template('usuarios.html')
 			context = {
-				'usuarios' : usuarios
+				'user_filter' : user_filter
 			}
 			return HttpResponse(template.render(context, request))
 		else:
 			return redirect('/')
 	else:
 		return redirect('/')
+	
 	
 def detalleUsuario(request, pk):
 	if(request.user.is_authenticated):
@@ -162,43 +184,49 @@ def modificarUsuario(request, pk):
 	if(request.user.is_authenticated):
 		if(request.user.profile.tipo == 'admin'):
 			usuario = get_object_or_404(User, pk=pk)
+			exitoCambio = False
+			exitoPass = False
+			formPass = AdminPasswordChangeForm(usuario)
+			form = UserForm(instance=usuario)
+			form.fields['password'].widget = forms.HiddenInput()
+			formT = TipoForm(instance=usuario.profile)
+			template = loader.get_template('modificarUsuario.html')
 			if(request.method == 'POST'):
-				form = UserForm(request.POST, instance=usuario)
-				form.fields['password'].widget = forms.HiddenInput()
-				formT = TipoForm(request.POST, instance=usuario)
-				username = request.POST.get('username', None)
-				name = request.POST.get('first_name', None)
-				email = request.POST.get('email', None)
-				tipo = request.POST.get('tipo', None)
-				if form.is_valid() and formT.is_valid():
-					if(username != ""):
-						usuario.username = username
-					if(tipo != ""):
-						usuario.profile.tipo = tipo
-					if(name != ""):
-						usuario.last_name = name
-					if(email != ""):
-						usuario.email = email
-					usuario.save()
-					return HttpResponseRedirect('/usuarios')
-				else:
-					template = loader.get_template('modificarUsuario.html')
-					context = {
-						'form' : form,
-						'tipo' : formT,
-					}
-					return HttpResponse(template.render(context, request))
-			else:
-				
-				form = UserForm(instance=usuario)
-				form.fields['password'].widget = forms.HiddenInput()
-				formT = TipoForm(instance=usuario.profile)
-				template = loader.get_template('modificarUsuario.html')
-				context = { #Diccionario que se le pasa al HTML
-					'form': form,
-					'tipo' : formT,
-				}
-				return HttpResponse(template.render(context, request))
+				if (request.POST['_submit'] == "DATOS"):
+					form = UserForm(request.POST, instance=usuario)
+					form.fields['password'].widget = forms.HiddenInput()
+					formT = TipoForm(request.POST, instance=usuario)
+					username = request.POST.get('username', None)
+					name = request.POST.get('first_name', None)
+					email = request.POST.get('email', None)
+					tipo = request.POST.get('tipo', None)
+					if form.is_valid() and formT.is_valid():
+						if(username != ""):
+							usuario.username = username
+						if(tipo != ""):
+							usuario.profile.tipo = tipo
+						if(name != ""):
+							usuario.last_name = name
+						if(email != ""):
+							usuario.email = email
+						usuario.save()
+						exitoCambio = True	
+				if (request.POST['_submit'] == "PASS"):
+					#return redirect('/loca') # sin permisos
+					formPass = AdminPasswordChangeForm(usuario, request.POST)
+					if formPass.is_valid():
+						exitoPass = True
+						user = formPass.save()
+						#update_session_auth_hash(request, user)  # Important!
+						formPass = AdminPasswordChangeForm(user)	
+			context = { #Diccionario que se le pasa al HTML
+				'form': form,
+				'tipo' : formT,
+				'formPass' : formPass,
+				'exitoCambio' : exitoCambio,
+				'exitoPass' : exitoPass
+			}
+			return HttpResponse(template.render(context, request))
 		else:
 			return redirect('/')
 	else:

@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'material',
     'material.frontend',
+    'django_filters',
 ]
 
 AUTHENTICATION_BACKENDS = (

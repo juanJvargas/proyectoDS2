@@ -1,31 +1,40 @@
 
 {% extends "index.html" %}
+{% load material_form %} 
+
 
 {% block content %}
+	<h1 style="color:red">
+	Buscar por atributos:
+	</h1>
+  <form method="get">
+  	{% form form=user_filter.form %}{% endform %}
+    <button type="submit" class="btn" >Search</button>
+  </form>
+
 	<h1 style="color:red">
 		Gestion de usuarios:
 	</h1>
 	<table border="1">
-		{% for u in usuarios %}
-
+		{% for u in user_filter.qs %}
 			<tr>
 				<td>
-				{{ u.first_name}}  - {{ u.username }}
+				{{ u.user.first_name}}  - {{ u.user.username }}
 				</td>
 
 				<td>
-				<a href="/usuarios/consultar/{{ u.id }}"> 
+				<a href="/usuarios/consultar/{{ u.user.id }}"> 
 					<font color="red"><i class="small material-icons">info</i></font>
 				</a>
 				</td>
 
 				<td>
-				<a href="/usuarios/editar/{{ u.id }}"> 
+				<a href="/usuarios/editar/{{ u.user.id }}"> 
 					<font color="red"><i class="small material-icons">edit</i> </font>
 				</a>
 				</td>
 				<td>
-				<a href="/usuarios/eliminar/{{ u.id }}"> 
+				<a href="/usuarios/eliminar/{{ u.user.id }}"> 
 					<font color="red"><i color="red" class="small material-icons">delete</i></font>
 				</a> 
 				</td>
