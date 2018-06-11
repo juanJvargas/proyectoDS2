@@ -102,4 +102,13 @@ class ActividadF(models.Model):
 	resultado= models.ForeignKey(Resultado, on_delete=models.CASCADE, default=False)
 
 class PreRequisito(models.Model):
-	cursos = models.ManyToManyField(Curso)
+	cursoP = models.ForeignKey(Curso, on_delete=models.CASCADE, default=False, related_name = 'requi', primary_key=True)
+	curso = models.ForeignKey(Curso, on_delete=models.CASCADE, default=False, related_name= 'curs')
+
+	class META:
+		unique_together = (('cursoP', 'curso'),)
+
+class ActividadEvaluacion(models.Model):
+	nombre = models.CharField(max_length=40)
+	descripcion = models.TextField(max_length=500, blank=True)
+	indicador = models.ForeignKey(Indicador, on_delete=models.CASCADE, default=False)

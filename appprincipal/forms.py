@@ -50,7 +50,7 @@ class CursoForm(forms.ModelForm):
 		print(independiente)
 		print(cred)
 		if(magistral + independiente != cred*3):
-			raise forms.ValidationError("Verifique los creditos y las horas de trabajo individual y magistral")
+			raise forms.ValidationError("Verifique los creditos y las horas de trabajo individual y magistral. Recuerde que la ecuacion que representa la relacion es: Horas clase magistral + Horas de trabajo independiente = Numero de creditos * 3")
 
 class UserForm(forms.ModelForm):
 	class Meta:
@@ -63,3 +63,7 @@ class TipoForm(forms.ModelForm):
 		model = Profile
 		fields = ('tipo',)
 
+class ActividadEvaForm(forms.ModelForm):
+	class Meta:
+		model = ActividadEvaluacion
+		fields = '__all__'

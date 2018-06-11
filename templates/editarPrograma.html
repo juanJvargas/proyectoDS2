@@ -3,6 +3,9 @@
 {% load staticfiles %}
 
 {% block content %}
+<a href="/programas">
+               <font color="red"><i class="tiny material-icons">arrow_back</i> </font>
+               Atras</a>
 	<h1 style="color:red"> Editar Programa {{ pr.nombre_programa }}:</h1>
 	<form method="POST" enctype="multipart/form-data">
 		{% csrf_token %}

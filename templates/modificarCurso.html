@@ -2,7 +2,9 @@
 {% load material_form %} 
 
 {% block content %}
-
+	<a href="/cursos">
+               <font color="red"><i class="tiny material-icons">arrow_back</i> </font>
+               Atras</a>
 	<h1>Modificar Curso</h1>
 	<form method="POST" enctype="multipart/form-data">
 		{% csrf_token %}

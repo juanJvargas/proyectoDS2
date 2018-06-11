@@ -1,13 +1,52 @@
 {% extends "index.html" %}
-{% load material_form %}
 
 {% block content %}
 
-	<h1>Agregar pre-requisito a {{curso.nombre}}</h1>
-	<form method="POST" enctype="multipart/form-data">
-		{% csrf_token %}
-		{% form form=form %}{% endform %}
-		<button type="submit" name="_submit" class="btn">Guardar</button>
-	</form>		
+
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+
+<h1 style="color:red"> Agregar prerequisito a {{ curso.nombre }}:</h1>
+
+<form method="POST" enctype="multipart/form-data">
+  <label for="cursos">Buscar curso por nombre o codigo</label>
+  <input id="cursos" >
+  <input type="hidden" name="cursoSel" value="VACIO">
+  <input type="hidden" name="cursoCodigo" value="{{ curso.codigo }}">
+  {% csrf_token %}
+  <button type="submit" name="_submit" class="btn" value="PREREQUISITO">Agregar prerequisito</button>
+</form>
+
+<script>
+
+$.when(
+    $.getScript( "https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js" ),
+    $.getScript( "https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js" ),
+    $.Deferred(function( deferred ){
+        $( deferred.resolve );
+    })
+).done(function(){
+
+    $("#cursos").autocomplete({
+      source: "/getCursos/{{ curso.codigo }}",
+      select: function (event, ui) { //item selected
+        AutoCompleteSelectHandler(event, ui)
+      },
+      minLength: 1,
+    });
+
+  function AutoCompleteSelectHandler(event, ui)
+  {
+    var selectedObj = ui.item;
+    document.getElementsByName("cursoSel")[0].value = ui.item.value;
+  }
+
+});
+
+
+
+
+</script>
+
+  
 
 {% endblock %}
