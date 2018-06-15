@@ -15,6 +15,58 @@ from .filters import UserFilter
 import json
 from django.db.models import Q
 
+#imprimir
+import os
+from django.conf import settings
+from django.http import HttpResponse
+from django.template import Context
+from django.template.loader import get_template
+from io import BytesIO
+from xhtml2pdf import pisa 
+
+def obtenerErroresCurso(codigo_curso):
+	curso = Curso.objects.get(codigo=codigo_curso)
+	competencias = Competencia.objects.filter(curso=curso)
+	noTieneCompetencias = competencias.count() != 0
+	competenciasSinResultados = []
+	for c in competencias:
+		resultadosAprendizaje = Resultado.objects.filter(competencia=c)
+		if(resultadosAprendizaje.count()==0):
+			competenciasSinResultados.append(c)
+	context = {
+		'curso' : curso,
+		'noTieneCompetencias': noTieneCompetencias,
+		'competenciasSinResultados' : competenciasSinResultados
+	}
+	return context
+
+
+def descargarpdfcurso(request, codigo_curso):
+	curso = Curso.objects.get(codigo=codigo_curso)
+	requisitos = PreRequisito.objects.filter(curso=curso)
+	competencias = Competencia.objects.filter(curso=curso)
+	parejasCompetencias = []
+	for c in competencias:
+		resultadosAprendizaje = Resultado.objects.filter(competencia=c)
+		triosResultadosAprendizaje = []
+		for r in resultadosAprendizaje:
+			actividadesFormacion = ActividadF.objects.filter(resultado=r)
+			indicadoresLogro = Indicador.objects.filter(resultado=r)
+			parejasIndicadoresLogros = []
+			for i in indicadoresLogro:
+				actividadesEvaluacion = ActividadEvaluacion.objects.filter(indicador=i)
+				parejasIndicadoresLogros.append((i, actividadesEvaluacion))
+			triosResultadosAprendizaje.append((r, actividadesFormacion, parejasIndicadoresLogros))
+		parejasCompetencias.append((c, triosResultadosAprendizaje))
+	form = CursoForm(instance = curso)
+	data = {'curso': curso, 'form': form, 'requisitos':requisitos, 'parejasCompetencias':parejasCompetencias}
+	template = get_template('plantillaCursosPre.html')
+	html  = template.render(data)
+	result = BytesIO()
+	pdf = pisa.pisaDocument(BytesIO(html.encode('utf-8')), result)
+	#return HttpResponse(html)
+	return HttpResponse(result.getvalue(), content_type='application/pdf')
+
 class Factory:
 	def crearFormulario(self, tipo, request=None):
 		if(tipo == 'user'):
@@ -108,11 +160,11 @@ def inicio(request):
 				formPass = PasswordChangeForm(request.user)
 		template = loader.get_template('verPerfil.html')
 		context = {
-			'texto' : "Información de mi perfil eee:",
+			'texto' : "Información de mi perfil:",
 			'form' : form,
 			'tipo' : formT,
 			'formPass' : formPass,
-			'exitoPass' : exitoPass
+			'exitoPass' : exitoPass,
 		}
 		return render(request, 'verPerfil.html', context)
 		#return HttpResponse(template.render(context, request))
@@ -405,7 +457,8 @@ def eliminarUsuario(request, pk):
 
 
 def gestionarCursos(request):
-	if(request.user.is_authenticated):
+	if(request.user.is_authenticated and (request.user.profile.tipo == 'director' or 
+		request.user.profile.tipo == 'profesor' or request.user.profile.tipo == 'decano')):
 		if(request.user.profile.tipo == 'director'):
 			try:
 				programa = Programa.objects.get(director_id=request.user.id)
@@ -416,34 +469,22 @@ def gestionarCursos(request):
 				}
 				return HttpResponse(template.render(context, request))
 			cursos = Curso.objects.filter(programa_id=programa.codigo)
-			template = loader.get_template('cursos.html')
-			
-			context = {
-				'cursos' : cursos,
-				'puedoeliminar' : request.user.profile.tipo == 'director',
-				'solover' : request.user.profile.tipo != 'decano',
-			}
-			return HttpResponse(template.render(context, request))
 		elif(request.user.profile.tipo == 'profesor'):
 			cursos = Curso.objects.filter(docente_id=request.user.pk)
-			template = loader.get_template('cursos.html') #Modificar template para gestion del director
-			context = {
-				'cursos' : cursos,
-				'puedoeliminar' : request.user.profile.tipo == 'director',
-				'solover' : request.user.profile.tipo != 'decano',
-			}
-			return HttpResponse(template.render(context, request))
 		elif(request.user.profile.tipo == 'decano'):
 			cursos = Curso.objects.all()
-			template = loader.get_template('cursos.html') #Modificar template para gestion del director
-			context = {
-				'cursos' : cursos,
-				'puedoeliminar' : request.user.profile.tipo == 'director',
-				'solover' : request.user.profile.tipo != 'decano',
-			}
-			return HttpResponse(template.render(context, request))
-		else:
-			return redirect('/')
+		template = loader.get_template('cursos.html') #Modificar template para gestion del director
+		erroresCursos = []
+		for c in cursos:
+			erroresCursos.append(obtenerErroresCurso(c.codigo))
+		print(erroresCursos)
+		context = {
+			'cursos' : cursos,
+			'puedoeliminar' : request.user.profile.tipo == 'director',
+			'solover' : request.user.profile.tipo != 'decano',
+			'erroresCursos' : erroresCursos
+		}
+		return HttpResponse(template.render(context, request))
 	else:
 		return redirect('/')
 

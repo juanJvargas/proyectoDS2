@@ -1,0 +1,95 @@
+<html>
+<head>
+<style type="text/css">
+
+table {
+    width:100%; 
+    width:"600px";
+}
+
+td {
+    text-align: center;
+    font-size: 12px;
+    padding: 4px;
+    background-color: #eceff1;
+}
+
+th {
+    background-color: #D51B23;
+    color: white;
+    text-align: left;
+    font-size: 12px;
+    padding: 4px;
+}
+</style>
+</head>
+<body>
+
+	<center><h1 style="font-size: 20px;"> INFORMACION DEL CURSO:  {{curso.nombre}} </h1> 
+	<table border="1px" bordercolor="#D3D3D3">
+		    <tr>
+              <th> Prerequisitos:</th>
+              <td> 
+            {% for r in requisitos %} 
+               {{ r.cursoP.codigo }} - {{ r.cursoP.nombre }} <br>
+            {% endfor %}
+        </td>
+            </tr>
+        {% for field in form.visible_fields %}
+			<tr>
+			  <th> {{ field.label_tag }} </th>
+			  <td> {{ field.value }}  </td>
+			</tr>
+
+		{% endfor %}
+	</table>
+	</center>
+<br>
+<font size="12px">
+<li><b>Competencias de {{curso.nombre}} :  </b>
+    <ul>
+        {% for pc in parejasCompetencias %} 
+        <li> <b>Competencia:</b> {{ pc.0.nombre }}, {{ pc.0.descripcion }}
+            <ul>
+                {% for trios in pc.1 %} 
+                <li> 
+                    <b>Resultado de aprendizaje: </b> {{trios.0.verbo}} {{trios.0.contenido}} {{trios.0.contexto}} {{trios.0.proposito}}
+                    <ul>
+                        <li>
+                            <b>Indicadores de logro:</b>
+                            <ul>
+                            {% for indi in trios.2 %} 
+                                <li> <b> Indicador: </b> {{indi.0.habilidad}} {{indi.0.contenido}} {{indi.0.contexto}}
+                                    <ul>
+                                        {% for actE in indi.1 %} 
+                                        <li>
+                                            <b>Actividad Evaluacion:</b> {{actE.nombre}} {{actE.description}}
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                </li>    
+                            {% endfor %}
+                            </ul>
+                        </li>
+                        <li><b>Actividades de formacion:</b>
+                            <ul>
+                            {% for act in trios.1 %} 
+                                <li>
+                                    {{act.nombre}}: {{act.descripcion}}
+                                </li>    
+                            {% endfor %}
+                            </ul>
+                        </li>
+
+                    </ul>
+                </li>
+                {% endfor %}
+            </ul>
+        </li>
+        {% endfor %}
+    </ul>
+</li>
+ </font>
+
+</body>
+</html>
