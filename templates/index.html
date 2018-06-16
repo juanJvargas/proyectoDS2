@@ -71,8 +71,38 @@
          </div>
          <div class="derecha">
             <div class="contenido_derecha">
-               
+
+{% if erroresCursos %}
+
+
+      <ul class="collection with-header">
+
+        <li class="collection-header">  <font color="red"><h4> <i class="material-icons small">warning</i> Errores</h4></font></li>
+
+      {% for cursoError in erroresCursos %}
+
+         {% if cursoError.noTieneCompetencias == False %}
+           <li class="collection-item"><div>El curso {{cursoError.curso.nombre}} no tiene almenos 1 competencia.
+            <a href="#!" class="secondary-content">
+            <font color="red"> <i class="material-icons">send</i> </font>
+            </a></div></li> 
+         {% endif %}
+
+         {% for competenciaSinResultado in cursoError.competenciasSinResultados %}
+           <li class="collection-item"><div>La competencia {{competenciaSinResultado.nombre}} del curso {{cursoError.curso.nombre}} no tiene resultados de aprendizaje.
+            <a href="#!" class="secondary-content">
+            <font color="red"> <i class="material-icons">send</i> </font>
+            </a></div></li> 
+         {% endfor %}
+
+      {% endfor %}
+
+      </ul>
+            
+{% endif %}
+
                {% block content %} {% endblock %}
+
             </div>
          </div>
       </div>
