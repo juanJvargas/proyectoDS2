@@ -22,7 +22,20 @@ class CursoFilter(django_filters.FilterSet):
 				   'docente',
 				   'creditos'
 		]
-		
+		filter_overrides = {
+             models.CharField: {
+                 'filter_class': django_filters.CharFilter,
+                 'extra': lambda f: {
+                     'lookup_expr': 'icontains',
+                 },
+             },
+             models.BooleanField: {
+                 'filter_class': django_filters.BooleanFilter,
+                 'extra': lambda f: {
+                     'widget': forms.CheckboxInput,
+                 },
+             },
+         }		
 
 class ProgramaFilter(django_filters.FilterSet):
 	class Meta:
@@ -30,3 +43,17 @@ class ProgramaFilter(django_filters.FilterSet):
 		exclude = ['director',
 					'numero_creditos_graduacion'
 		]
+		filter_overrides = {
+             models.CharField: {
+                 'filter_class': django_filters.CharFilter,
+                 'extra': lambda f: {
+                     'lookup_expr': 'icontains',
+                 },
+             },
+             models.BooleanField: {
+                 'filter_class': django_filters.BooleanFilter,
+                 'extra': lambda f: {
+                     'widget': forms.CheckboxInput,
+                 },
+             },
+         }
