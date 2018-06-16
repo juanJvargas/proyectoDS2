@@ -11,7 +11,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm		
 from django.contrib.auth.forms import AdminPasswordChangeForm		
 from django.shortcuts import render, redirect		
-from .filters import UserFilter
+from .filters import *
 import json
 from django.db.models import Q
 
@@ -371,9 +371,14 @@ def gestionarprogramas(request):
 		if(request.user.profile.tipo == 'decano'):
 			programas = Programa.objects.order_by('codigo')
 			template = loader.get_template('programas.html')
+			Tprogramas = Programa.objects.all()
+			programa_filter = ProgramaFilter(request.GET, queryset=Tprogramas)
+			
+
 			context = { #Diccionario que se le pasa al HTML
 				'programas': programas,
 				'puedoeliminar' : request.user.profile.tipo == 'decano',
+				'programa_filter' : programa_filter,
 			}
 			return HttpResponse(template.render(context, request))
 		elif(request.user.profile.tipo == 'director'):
@@ -384,9 +389,12 @@ def gestionarprogramas(request):
 					'error': "No tiene programa academico asignado",
 				}
 				return HttpResponse(template.render(context, request))
+			Tprogramas = Programa.objects.all()
+			programa_filter = ProgramaFilter(request.GET, queryset=Tprogramas)
 			template = loader.get_template('programas.html') #Modificar template para gestion del director
 			context = { #Diccionario que se le pasa al HTML
-				'programas': programas
+				'programas': programas,
+				'programa_filter' : programa_filter,
 			}
 			return HttpResponse(template.render(context, request))
 		else:
@@ -524,11 +532,14 @@ def gestionarCursos(request):
 		erroresCursos = []
 		for c in cursos:
 			erroresCursos.append(obtenerErroresCurso(c.codigo))
+		Tcursos = Curso.objects.all()
+		curso_filter = CursoFilter(request.GET, queryset=Tcursos)
 		context = {
 			'cursos' : cursos,
 			'puedoeliminar' : request.user.profile.tipo == 'director',
 			'solover' : request.user.profile.tipo != 'decano',
-			'erroresCursos' : erroresCursos
+			'erroresCursos' : erroresCursos,
+			'curso_filter' : curso_filter
 		}
 		return HttpResponse(template.render(context, request))
 	else:

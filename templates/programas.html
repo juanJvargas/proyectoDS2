@@ -1,11 +1,21 @@
+
 {% extends "index.html" %}
+{% load material_form %} 
 
 {% block content %}
+	<h1 style="color:red">
+	Buscar por atributos:
+	</h1>
+  <form method="get">
+  	{% form form=programa_filter.form %}{% endform %}
+    <button type="submit" class="btn" >Buscar</button>
+  </form>
+
 	<h1 style="color:red">
 		Gestion de programas:
 	</h1>
 	<table border="1">
-		{% for pr in programas %}
+		{% for pr in programa_filter.qs %}
 
 			<tr>
 				<td>

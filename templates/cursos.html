@@ -1,11 +1,22 @@
+
 {% extends "index.html" %}
+{% load material_form %} 
+
 
 {% block content %}
+	<h1 style="color:red">
+	Buscar por atributos:
+	</h1>
+  <form method="get">
+  	{% form form=curso_filter.form %}{% endform %}
+    <button type="submit" class="btn" >Buscar</button>
+  </form>
+
 	<h1 style="color:red">
 		Gestion de Cursos:
 	</h1>
 	<table border="1">
-		{% for curso in cursos %}
+		{% for curso in curso_filter.qs %}
 
 			<tr>
 				<td>

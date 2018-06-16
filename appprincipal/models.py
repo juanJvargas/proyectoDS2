@@ -13,7 +13,7 @@ class Profile(models.Model):
         ('director', 'Director'),
         ('profesor', 'Profesor'),
     )
-	tipo = models.TextField(max_length=500, blank=True, choices=T_OPTION)
+	tipo = models.TextField(max_length=500, blank=False, choices=T_OPTION)
 
 	@receiver(post_save, sender=User)
 	def create_user_profile(sender, instance, created, **kwargs):
@@ -25,12 +25,12 @@ class Profile(models.Model):
 		instance.profile.save()
 
 class Programa(models.Model):
-	codigo = models.CharField(max_length=10, primary_key=True)
-	nombre_programa = models.CharField(max_length=50)
-	escuela = models.CharField(max_length=40)
-	numero_semestres =  models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(12)])
-	numero_creditos_graduacion = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(200)])
-	director = models.ForeignKey(User, on_delete=models.CASCADE, default=False)
+	codigo = models.CharField(max_length=10, primary_key=True, blank=False)
+	nombre_programa = models.CharField(max_length=50, blank=False)
+	escuela = models.CharField(max_length=40, blank=False)
+	numero_semestres =  models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(12)], blank=False)
+	numero_creditos_graduacion = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(200)], blank=False)
+	director = models.ForeignKey(User, on_delete=models.CASCADE, default=False, blank=False)
 
 	def __str__(self): 
 		return self.nombre_programa
@@ -39,27 +39,27 @@ class Programa(models.Model):
 		ordering = ('codigo',)
 
 class Curso(models.Model):
-	codigo=models.CharField(max_length=10, primary_key=True)
-	nombre=models.CharField(max_length=40)
-	creditos=models.IntegerField()
-	horas_clase_magistral=models.IntegerField()
-	horas_estudio_independiente=models.IntegerField()
+	codigo=models.CharField(max_length=10, primary_key=True, blank=False)
+	nombre=models.CharField(max_length=40, blank=False)
+	creditos=models.IntegerField(blank=False)
+	horas_clase_magistral=models.IntegerField(blank=False)
+	horas_estudio_independiente=models.IntegerField(blank=False)
 	T_OPTION = (
         ('Asignatura basica', 'Asignatura basica'),
         ('Asignatura profesional', 'Asignatura profesional'),
         ('Asignatura electiva complementaria', 'Asignatura electiva complementaria'),
         ('Asignatura electiva profesional', 'Asignatura electiva profesional'),
     )
-	tipo_curso=models.CharField(max_length=50, choices=T_OPTION)
+	tipo_curso=models.CharField(max_length=50, choices=T_OPTION, blank=False)
 	V_OPTION = (
         ('si', 'Si'),
         ('no', 'No'),
     )
-	validable=models.CharField(max_length=2, choices=V_OPTION) #Solo se acepta si o no
-	habilitable=models.CharField(max_length=2, choices=V_OPTION) #Solo se acepta si o no
-	programa=models.ForeignKey(Programa, on_delete=models.CASCADE)
+	validable=models.CharField(max_length=2, choices=V_OPTION, blank=False) #Solo se acepta si o no
+	habilitable=models.CharField(max_length=2, choices=V_OPTION, blank=False) #Solo se acepta si o no
+	programa=models.ForeignKey(Programa, on_delete=models.CASCADE, blank=False)
 	semestre=models.IntegerField()
-	docente=models.ForeignKey(User, on_delete=models.CASCADE, default=False)
+	docente=models.ForeignKey(User, on_delete=models.CASCADE, default=False, blank=False)
 
 	def __str__(self): 
 		return self.nombre
@@ -69,46 +69,38 @@ class Curso(models.Model):
 
 
 class Competencia(models.Model):
-	nombre = models.CharField(max_length=40)
-	descripcion = models.TextField(max_length=500, blank=True)
-	curso = models.ForeignKey(Curso, on_delete=models.CASCADE, default=False)
+	nombre = models.CharField(max_length=40, blank=False)
+	descripcion = models.TextField(max_length=500, blank=False)
+	curso = models.ForeignKey(Curso, on_delete=models.CASCADE, default=False, blank=False)
 
 class Resultado(models.Model):
-	T_OPTION1 = (
-        ('distingue', 'Distingue'),
-        ('analiza', 'Analiza'),
-        
-    )
-	verbo=models.CharField(max_length=50, choices=T_OPTION1)
-	contenido=models.TextField(max_length=50, blank=True)
-	contexto=models.TextField(max_length=50, blank=True)
-	proposito=models.TextField(max_length=50, blank=True)
-	competencia= models.ForeignKey(Competencia, on_delete=models.CASCADE, default=False)
+	
+	verbo=models.CharField(max_length=50, blank=False)
+	contenido=models.TextField(max_length=50, blank=False)
+	contexto=models.TextField(max_length=50, blank=False)
+	proposito=models.TextField(max_length=50, blank=False)
+	competencia= models.ForeignKey(Competencia, on_delete=models.CASCADE, default=False, blank=False)
 
 class Indicador(models.Model):
-	T_OPTION1 = (
-        ('distingue', 'Distingue'),
-        ('analiza', 'Analiza'),
-        
-    )
-	habilidad=models.CharField(max_length=50, choices=T_OPTION1)
-	contenido=models.TextField(max_length=50, blank=True)
-	contexto=models.TextField(max_length=50, blank=True)
-	resultado= models.ForeignKey(Resultado, on_delete=models.CASCADE, default=False)
+	
+	habilidad=models.CharField(max_length=50,blank=False)
+	contenido=models.TextField(max_length=50, blank=False)
+	contexto=models.TextField(max_length=50, blank=False)
+	resultado= models.ForeignKey(Resultado, on_delete=models.CASCADE, default=False, blank=False)
 
 class ActividadF(models.Model):
-	nombre = models.CharField(max_length=40)
-	descripcion = models.TextField(max_length=500, blank=True)
-	resultado= models.ForeignKey(Resultado, on_delete=models.CASCADE, default=False)
+	nombre = models.CharField(max_length=40, blank=False)
+	descripcion = models.TextField(max_length=500, blank=False)
+	resultado= models.ForeignKey(Resultado, on_delete=models.CASCADE, default=False, blank=False)
 
 class PreRequisito(models.Model):
-	cursoP = models.ForeignKey(Curso, on_delete=models.CASCADE, default=False, related_name = 'requi', primary_key=True)
-	curso = models.ForeignKey(Curso, on_delete=models.CASCADE, default=False, related_name= 'curs')
+	cursoP = models.ForeignKey(Curso, on_delete=models.CASCADE, default=False, related_name = 'requi', primary_key=True, blank=False)
+	curso = models.ForeignKey(Curso, on_delete=models.CASCADE, default=False, related_name= 'curs', blank=False)
 
 	class META:
 		unique_together = (('cursoP', 'curso'),)
 
 class ActividadEvaluacion(models.Model):
-	nombre = models.CharField(max_length=40)
-	descripcion = models.TextField(max_length=500, blank=True)
-	indicador = models.ForeignKey(Indicador, on_delete=models.CASCADE, default=False)
+	nombre = models.CharField(max_length=40, blank=False)
+	descripcion = models.TextField(max_length=500, blank=False)
+	indicador = models.ForeignKey(Indicador, on_delete=models.CASCADE, default=False, blank=False)
