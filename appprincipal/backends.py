@@ -23,6 +23,13 @@ class EmailAuthBackend(backends.ModelBackend):
             except User.DoesNotExist:
                 return None
 
+    def authenticate(self, email=None):
+        try:
+            user = User.objects.get(email=email)
+            return user
+        except User.DoesNotExist:
+            return None
+
     def get_user(self, user_id):
         """ Get a User object from the user_id. """
         try:

@@ -168,9 +168,14 @@ def autenticar(request):
 	if(request.user.is_authenticated):
 		return redirect('/')
 	if(request.method == 'POST'):
-		username = request.POST.get('username', None)
-		password = request.POST.get('password', None)
-		user = authenticate(username=username, password=password)#Agregar login con correo
+		#Si es inicio con gmail
+		if request.POST.get("email", None):
+			email = request.POST.get('email', None)
+			user = authenticate(email=email)#Agregar login con correo
+		else:
+			username = request.POST.get('username', None)
+			password = request.POST.get('password', None)
+			user = authenticate(username=username, password=password)#Agregar login con correo
 		if(user != None):
 			login(request, user)
 			return redirect('/')
@@ -179,6 +184,8 @@ def autenticar(request):
 				'datosIncorrectos' : True
 			}
 			return HttpResponse(template.render(context, request))
+
+
 	context = {
 		'datosIncorrectos' : False
   }

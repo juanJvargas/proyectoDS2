@@ -29,12 +29,17 @@
 		{% endfor %}	
 	</table>
 
+{% if formPass%}
+
 	<h1> Modificar Contraseña:</h1>
 	<form method="POST" enctype="multipart/form-data">
 		{% csrf_token %}
 		{% form form=formPass %}{% endform %}
 		<button type="submit" name="_submit" class="btn">Modificar</button>
 	</form>
+{% endif %}
+
+
 
 {% endblock %}
 

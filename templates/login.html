@@ -1,12 +1,14 @@
 <html lang="en-Us">
 <head>
 {% load staticfiles %}
+
 	<meta charset="utf-8">
     
 	<title>Proyecto Los Arandanos</title>
 
 	<link rel="stylesheet" href="{% static 'css/estiloLogin.css' %}">
 	<link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Open+Sans:400,300'>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 	<!--[if lt IE 9]>
 		<script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -16,11 +18,67 @@
 
 <body>
 
+
+
+	<script src="https://www.gstatic.com/firebasejs/5.0.4/firebase.js"></script>
+	<script>
+	  // Initialize Firebase
+	  var config = {
+	    apiKey: "AIzaSyBbR00p7cHvkpPOK31rpdVE-vmvNlbWZbs",
+	    authDomain: "almendroapp.firebaseapp.com",
+	    databaseURL: "https://almendroapp.firebaseio.com",
+	    projectId: "almendroapp",
+	    storageBucket: "almendroapp.appspot.com",
+	    messagingSenderId: "192618483167"
+	  };
+	  firebase.initializeApp(config);
+	</script>
+
+	<script>
+		function iniciarConGmail() {
+			var provider = new firebase.auth.GoogleAuthProvider();
+			firebase.auth()
+			.signInWithPopup(provider)
+			.then(function(result){
+				console.log(result.user.email);
+
+			    var form = document.createElement("form");
+			    form.setAttribute("method", "POST");
+			    form.setAttribute("action", "/login");
+
+			    var inputElem = document.createElement('input');
+				inputElem.type = 'hidden';
+				inputElem.name = 'csrfmiddlewaretoken';
+				inputElem.value = '{{ csrf_token }}';
+				form.appendChild(inputElem);
+
+			    var emailField = document.createElement("input");
+			    emailField.setAttribute("type", "hidden");
+			    emailField.setAttribute("name", "email");
+			    emailField.setAttribute("value", result.user.email);
+			    form.appendChild(emailField);
+
+			    document.body.appendChild(form);
+			    form.submit();
+			})
+		}
+
+	</script>
+
+
+	<div class="limiter">
+		<div class="container-login100">
+			<div class="wrap-login100">
+
+
 	<div id="login">
+<center>
+<img src="/media/univalle.png" width="150px">
+</center>
+<br>
+		<center><h1><strong>Bienvenido.</strong> Por favor, inicie sesion</h1> </center>
 
-		<h1><strong>Bienvenido.</strong> Por favor, inicie sesion</h1>
-
-		<form action="" method="post">
+		<form action="" method="post" >
 			{% csrf_token %}
 			<fieldset>
 
@@ -34,15 +92,30 @@
 				{% endif %}
 
 				
-				<p><a href="#">¿Olvido la contraseña?</a></p>
-
-				<p><input type="submit" value="Entrar"></p>
+				<p><input class="entrar"  type="submit" value="Entrar"></p>
+        </a>
+        <a onclick="iniciarConGmail()" class="google btn"><i class="fa fa-google fa-fw">
+          </i> Login with Google
+        </a>
 
 			</fieldset>
 
 		</form>
 
 	</div> <!-- end login -->
+<br>
+<br>
+
+
+			</div>
+		</div>
+	</div>
+
+
+
 
 </body>
 </html>
+
+
+
