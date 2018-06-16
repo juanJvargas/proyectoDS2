@@ -3,11 +3,36 @@
 
 
 {% block content %}
-	<h1> Modificar Usuario </h1>
+
+	{% if exitoCambio %}
+	<script>
+	alert("Sus datos se han cambiado de forma exitosa ");
+	</script>
+	{% endif %}
+
+	{% if exitoPass %}
+	<script>
+	alert("La contraseña se ha actualizado exitosamente");
+	</script>
+	{% endif %}
+
+<a href="/usuarios">
+               <font color="red"><i class="tiny material-icons">arrow_back</i> </font>
+               Atras</a>
+	<h1> Modificar datos usuario </h1>
 	<form method="POST" enctype="multipart/form-data">
 		{% csrf_token %}
 		{% form form=form %}{% endform %}
 		{% form form=tipo %}{% endform %}
-		<button type="submit" name="_submit" class="btn">Guardar</button>
+		<button type="submit" name="_submit" class="btn" value="DATOS">Guardar</button>
 	</form>
+
+	<h1> Modificar contraseña usuario </h1>
+	<form method="POST" enctype="multipart/form-data">
+		{% csrf_token %}
+		{% form form=formPass %}{% endform %}
+		<button type="submit" name="_submit" class="btn" value="PASS">Guardar</button>
+	</form>
+
+
 {% endblock %}

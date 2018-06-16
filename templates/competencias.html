@@ -7,7 +7,7 @@
 	<table border="1">
 		{% if puedogestionar %}
 		<td>
-		<a href="/cursos/{{ curso.codigo }}/competencias/new" title="Añadir"> 
+		<a href="/competencias/new/{{ curso.codigo }}" title="Añadir"> 
 			<font color="red"><i class="small material-icons">library_add</i> </font>
 		</a>
 		<td>
@@ -20,14 +20,14 @@
 				</td>
 
 				<td>
-				<a href="/cursos/{{ curso.codigo }}/competencia/consultar/{{ competencia.id }}" title="Informacion"> 
+				<a href="/competencia/consultar/{{ competencia.id }}" title="Informacion"> 
 					<font color="red"><i class="small material-icons">info</i></font>
 				</a>
 				</td>
 				{% if puedogestionar %}
 				<!--Agregar funcionalidad para agregar profesores a un curso-->
 				<td>
-				<a href="/cursos/{{ curso.codigo }}/competencia/editar/{{ competencia.id }}" title="Editar"> 
+				<a href="/competencia/editar/{{ competencia.id }}" title="Editar"> 
 					<font color="red"><i class="small material-icons">edit</i> </font>
 				</a>
 				<td>
@@ -36,7 +36,7 @@
 				</a> 
 				</td>
 				<td>
-				<a href="/cursos/{{ curso.codigo }}/competencia/eliminar/{{ competencia.id }}" title="Eliminar"> 
+				<a href="/competencia/eliminar/{{ competencia.id }}" title="Eliminar"> 
 					<font color="red"><i color="red" class="small material-icons">delete</i></font>
 				</a> 
 				</td>

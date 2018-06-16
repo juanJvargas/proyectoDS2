@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'material',
     'material.frontend',
+    'django_filters',
 ]
 
 AUTHENTICATION_BACKENDS = (
@@ -90,7 +91,7 @@ WSGI_APPLICATION = 'proyecto1.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'ProyectoDjango',
+        'NAME': 'Proyecto',
         'USER': 'postgres',
         'PASSWORD': 'admin',
         'HOST': 'localhost',

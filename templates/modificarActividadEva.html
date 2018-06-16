@@ -2,14 +2,12 @@
 {% load material_form %} 
 
 {% block content %}
-<a href="/usuarios">
-               <font color="red"><i class="tiny material-icons">arrow_back</i> </font>
-               Atras</a>
-	<h1> Agregar Usuarioss </h1>
+
+	<h1>Modificar Actividad de Evaluacion</h1>
 	<form method="POST" enctype="multipart/form-data">
 		{% csrf_token %}
 		{% form form=form %}{% endform %}
-		{% form form=tipo %}{% endform %}
 		<button type="submit" name="_submit" class="btn">Guardar</button>
-	</form>
+	</form>		
+
 {% endblock %}

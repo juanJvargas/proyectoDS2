@@ -18,36 +18,32 @@
 				</a>
 				</td>
 
+				{% if solover %}
+					<td>
+					<a href="/cursos/editar/{{ curso.codigo }}" title="Editar"> 
+						<font color="red"><i class="small material-icons">edit</i> </font>
+					</a>
+					</td>
 
-				<td>
-				<a href="/cursos/editar/{{ curso.codigo }}" title="Editar"> 
-					<font color="red"><i class="small material-icons">edit</i> </font>
-				</a>
-				</td>
-
-				<td>
-				<a href="/prerequisitos/{{ curso.codigo }}" title="prerequisitos"> 
-					<font color="red"><i class="small material-icons">library_books</i></font>
-				</a>
-				</td>
-				{% if puedoeliminar %}
-				<!--Agregar funcionalidad para agregar profesores a un curso-->
-				<td>
-				<a href="/cursos/agregar/{{ curso.codigo }}" title="Agregar profesor"> 
-					<font color="red"><i color="red" class="small material-icons">person_add</i></font>
-				</a> 
-				</td>
-				<td>
-				<a href="/cursos/eliminar/{{ curso.codigo }}" title="Eliminar"> 
-					<font color="red"><i color="red" class="small material-icons">delete</i></font>
-				</a> 
-				</td>
-				{% else %}
-				<td>
-				<a href="/cursos/competencias/{{ curso.codigo }}" title="Competencias"> 
-					<font color="red"><i color="red" class="small material-icons">library_books</i></font>
-				</a> 
-				</td>
+					<td>
+					<a href="/prerequisitos/{{ curso.codigo }}" title="prerequisitos"> 
+						<font color="red"><i class="small material-icons">library_books</i></font>
+					</a>
+					</td>
+					{% if puedoeliminar %}
+					
+					<td>
+					<a href="/cursos/eliminar/{{ curso.codigo }}" title="Eliminar"> 
+						<font color="red"><i color="red" class="small material-icons">delete</i></font>
+					</a> 
+					</td>
+					{% else %}
+					<td>
+					<a href="/competencias/{{ curso.codigo }}" title="Competencias"> 
+						<font color="red"><i color="red" class="small material-icons">library_books</i></font>
+					</a> 
+					</td>
+					{% endif %}
 				{% endif %}
 			</tr>
 		{% endfor %}

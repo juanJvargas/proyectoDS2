@@ -21,18 +21,18 @@
                   <div class="collapsible-header"><i class="material-icons">description</i>Usuarios</div>
                   <div class="collapsible-body">
                      <div class="collection">
-                        <a href="usuarios/new" class="collection-item">Agregar Usuarios</a>
+                        <a href="/usuarios/new" class="collection-item">Agregar Usuarios</a>
                         <a href="/usuarios" class="collection-item">Gestionar Usuarios</a>
                      </div>
                   </div>
                </li>
                {% endif %}
-               {% if user.profile.tipo == 'profesor' or user.profile.tipo == 'director' %}
+               {% if user.profile.tipo == 'profesor' or user.profile.tipo == 'director' or user.profile.tipo == 'decano'%}
                <li>
                   <div class="collapsible-header"><i class="material-icons">description</i>Cursos</div>
                   <div class="collapsible-body">
                      <div class="collection">
-                        {% if user.profile.tipo == 'director' %}
+                        {% if user.profile.tipo == 'director' or user.profile.tipo == 'profesor' %}
                         <a href="/cursos/new" class="collection-item">Agregar Cursos</a>
                         {%endif%}
                         <a href="/cursos" class="collection-item">Gestionar Cursos</a>
@@ -71,9 +71,7 @@
          </div>
          <div class="derecha">
             <div class="contenido_derecha">
-               <a href="{{request.META.HTTP_REFERER}}">
-               <font color="red"><i class="tiny material-icons">arrow_back</i> </font>
-               Atras</a>
+               
                {% block content %} {% endblock %}
             </div>
          </div>

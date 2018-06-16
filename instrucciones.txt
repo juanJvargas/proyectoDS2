@@ -1,4 +1,4 @@
-Instalar:
+﻿Instalar:
 python3
 pip
 pip install virtualenv
@@ -56,3 +56,6 @@ http://forms.viewflow.io/
 
 pip install six
 pip install django-autocomplete-light
+
+
+update appprincipal_profile set tipo = 'admin' where id='1'

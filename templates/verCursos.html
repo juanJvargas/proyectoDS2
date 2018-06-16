@@ -1,6 +1,9 @@
 {% extends "index.html" %}
 
 {% block content %}
+	<a href="/cursos">
+               <font color="red"><i class="tiny material-icons">arrow_back</i> </font>
+               Atras</a>
 	<h1 style="color:red"> Información del curso: {{curso.nombre}} </h1>
 	<table border="1">
 		{% for field in form.visible_fields %}

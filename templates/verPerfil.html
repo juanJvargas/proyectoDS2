@@ -1,11 +1,21 @@
 {% extends "index.html" %}
+{% load material_form %} 
 
 {% block content %}
+
+			{% if exitoPass%}
+			<script>
+			alert("Su contraseña se cambio exitosamente");
+			</script>
+			{% endif %}
+			<a href="/usuarios">
+               <font color="red"><i class="tiny material-icons">arrow_back</i> </font>
+               Atras</a>
 	<h1>{{ texto}}</h1>
 	<table border="1">
 		{% for field in form %}
-			<tr>
 			{% if field.name != "password" %}
+			<tr>
 			  <td>{{ field.label_tag }}</td>
 			  <td>{{ field.value }} </td>
 			</tr>
@@ -19,6 +29,12 @@
 		{% endfor %}	
 	</table>
 
-{% endblock %}}
+	<h1> Modificar Contraseña:</h1>
+	<form method="POST" enctype="multipart/form-data">
+		{% csrf_token %}
+		{% form form=formPass %}{% endform %}
+		<button type="submit" name="_submit" class="btn">Modificar</button>
+	</form>
 
+{% endblock %}
 
