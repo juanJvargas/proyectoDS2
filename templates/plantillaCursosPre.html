@@ -29,11 +29,11 @@ th {
 	<table border="1px" bordercolor="#D3D3D3">
 		    <tr>
               <th> Prerequisitos:</th>
-              <td> 
-            {% for r in requisitos %} 
-               {{ r.cursoP.codigo }} - {{ r.cursoP.nombre }} <br>
-            {% endfor %}
-        </td>
+                <td> 
+                    {% for r in requisitos %} 
+                       {{ r.cursoP.codigo }} - {{ r.cursoP.nombre }} <br>
+                    {% endfor %}
+                </td>
             </tr>
         {% for field in form.visible_fields %}
 			<tr>

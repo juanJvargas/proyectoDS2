@@ -82,15 +82,37 @@
       {% for cursoError in erroresCursos %}
 
          {% if cursoError.noTieneCompetencias == False %}
-           <li class="collection-item"><div>El curso {{cursoError.curso.nombre}} no tiene almenos 1 competencia.
-            <a href="#!" class="secondary-content">
+           <li class="collection-item"><div>El curso {{cursoError.curso.nombre}} debe tener almenos 1 competencia.
+            <a href="competencias/{{cursoError.curso.codigo}}" class="secondary-content">
             <font color="red"> <i class="material-icons">send</i> </font>
             </a></div></li> 
          {% endif %}
 
          {% for competenciaSinResultado in cursoError.competenciasSinResultados %}
-           <li class="collection-item"><div>La competencia {{competenciaSinResultado.nombre}} del curso {{cursoError.curso.nombre}} no tiene resultados de aprendizaje.
-            <a href="#!" class="secondary-content">
+           <li class="collection-item"><div>La competencia {{competenciaSinResultado.nombre}} del curso {{cursoError.curso.nombre}} debe tener al menos un resultado de aprendizaje.
+            <a href="resultados/gestionar/{{competenciaSinResultado.id}}" class="secondary-content">
+            <font color="red"> <i class="material-icons">send</i> </font>
+            </a></div></li> 
+         {% endfor %}
+
+         {% for resultadoSinIndicador in cursoError.resultadosSinIndicadores %}
+           <li class="collection-item"><div>El resultado de aprendizaje: {{resultadoSinIndicador.verbo}}, {{resultadoSinIndicador.contenido}}, {{resultadoSinIndicador.contexto}}, {{resultadoSinIndicador.proposito}} de la competencia {{resultadoSinIndicador.competencia.nombre}} del curso {{cursoError.curso.nombre}} debe tener al menos un indicador de logro
+            <a href="indicadores/gestionar/{{resultadoSinIndicador.id}}" class="secondary-content">
+            <font color="red"> <i class="material-icons">send</i> </font>
+            </a></div></li> 
+         {% endfor %}
+
+         {% for resultadoSinActividadFormacion in cursoError.resultadosSinActividadesFormacion %}
+           <li class="collection-item"><div>El resultado de aprendizaje: {{resultadoSinActividadFormacion.verbo}}, {{resultadoSinActividadFormacion.contenido}}, {{resultadoSinActividadFormacion.contexto}}, {{resultadoSinActividadFormacion.proposito}} de la competencia {{resultadoSinActividadFormacion.competencia.nombre}} del curso {{cursoError.curso.nombre}} debe tener al menos una activida de formacion
+            <a href="actividadesF/gestionar/{{resultadoSinActividadFormacion.id}}" class="secondary-content">
+            <font color="red"> <i class="material-icons">send</i> </font>
+            </a></div></li> 
+         {% endfor %}
+
+
+         {% for indicadorSinActividadesEvaluacion in cursoError.indicadoresSinActividadesEvaluacion %}
+           <li class="collection-item"><div>El indicador de logro: {{indicadorSinActividadesEvaluacion.habilidad}}, {{indicadorSinActividadesEvaluacion.contenido}}, {{indicadorSinActividadesEvaluacion.contexto}} del resultado de aprendizaje: {{indicadorSinActividadesEvaluacion.verbo}}, {{indicadorSinActividadesEvaluacion.contenido}}, {{indicadorSinActividadesEvaluacion.contexto}}, {{indicadorSinActividadesEvaluacion.proposito}} de la competencia {{indicadorSinActividadesEvaluacion.competencia.nombre}} del curso {{cursoError.curso.nombre}} debe tener al menos una activida de evaluación
+            <a href="actividadesEva/gestionar/{{indicadorSinActividadesEvaluacion.id}}" class="secondary-content">
             <font color="red"> <i class="material-icons">send</i> </font>
             </a></div></li> 
          {% endfor %}

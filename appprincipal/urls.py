@@ -57,4 +57,6 @@ urlpatterns = [
 	path('actividadesEva/editar/<codigo_actividadE>', views.modificarActividadesEva),
 	path('actividadesEva/eliminar/<codigo_actividadE>', views.eliminarActividadesEva),
 	path('descargarpdfcurso/<codigo_curso>', views.descargarpdfcurso),
+	path('descargarReporteCompetenciasPrograma/<codigo_programa>', views.descargarReporteCompetenciasPrograma),
+
 ]

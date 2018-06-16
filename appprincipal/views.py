@@ -24,48 +24,88 @@ from django.template.loader import get_template
 from io import BytesIO
 from xhtml2pdf import pisa 
 
+def descargarReporteCompetenciasPrograma(request, codigo_programa):
+	if(request.user.is_authenticated):
+		programa = Programa.objects.get(codigo=codigo_programa)
+		competencias = []
+		for it in range(1, programa.numero_semestres+1):
+			competencias.append((it, []))
+		for semestre in range(1, programa.numero_semestres+1):
+			cursos = Curso.objects.filter(programa=codigo_programa, semestre=semestre)
+			for curso in cursos:
+				auxCompetencias = Competencia.objects.filter(curso=curso)
+				competencias[semestre-1][1].append(auxCompetencias)
+		template = get_template('plantillaReporteCompetenciasPrograma.html')
+		data = {'competencias':competencias, 'programa':programa}
+		print(competencias)
+		html  = template.render(data)
+		result = BytesIO()
+		pdf = pisa.pisaDocument(BytesIO(html.encode('utf-8')), result)
+		return HttpResponse(result.getvalue(), content_type='application/pdf')
+	else:
+		return redirect('/login')
+
 def obtenerErroresCurso(codigo_curso):
 	curso = Curso.objects.get(codigo=codigo_curso)
 	competencias = Competencia.objects.filter(curso=curso)
 	noTieneCompetencias = competencias.count() != 0
 	competenciasSinResultados = []
+	resultadosSinIndicadores = []
+	resultadosSinActividadesFormacion = []
+	indicadoresSinActividadesEvaluacion = []
 	for c in competencias:
 		resultadosAprendizaje = Resultado.objects.filter(competencia=c)
+		for r in resultadosAprendizaje:
+			actividadesFormacion = ActividadF.objects.filter(resultado=r)
+			indicadores = Indicador.objects.filter(resultado=r)
+			for i in indicadores:
+				actividadesEvaluacion = ActividadEvaluacion.objects.filter(indicador=i)
+				if actividadesEvaluacion.count()==0:
+					indicadoresSinActividadesEvaluacion.append(i)
+			if indicadores.count()==0:
+				resultadosSinIndicadores.append(r)
+			if actividadesFormacion.count()==0:
+				resultadosSinActividadesFormacion.append(r)
 		if(resultadosAprendizaje.count()==0):
 			competenciasSinResultados.append(c)
 	context = {
 		'curso' : curso,
 		'noTieneCompetencias': noTieneCompetencias,
-		'competenciasSinResultados' : competenciasSinResultados
+		'competenciasSinResultados' : competenciasSinResultados,
+		'resultadosSinIndicadores' : resultadosSinIndicadores,
+		'indicadoresSinActividadesEvaluacion': indicadoresSinActividadesEvaluacion,
+		'resultadosSinActividadesFormacion': resultadosSinActividadesFormacion
 	}
 	return context
 
-
 def descargarpdfcurso(request, codigo_curso):
-	curso = Curso.objects.get(codigo=codigo_curso)
-	requisitos = PreRequisito.objects.filter(curso=curso)
-	competencias = Competencia.objects.filter(curso=curso)
-	parejasCompetencias = []
-	for c in competencias:
-		resultadosAprendizaje = Resultado.objects.filter(competencia=c)
-		triosResultadosAprendizaje = []
-		for r in resultadosAprendizaje:
-			actividadesFormacion = ActividadF.objects.filter(resultado=r)
-			indicadoresLogro = Indicador.objects.filter(resultado=r)
-			parejasIndicadoresLogros = []
-			for i in indicadoresLogro:
-				actividadesEvaluacion = ActividadEvaluacion.objects.filter(indicador=i)
-				parejasIndicadoresLogros.append((i, actividadesEvaluacion))
-			triosResultadosAprendizaje.append((r, actividadesFormacion, parejasIndicadoresLogros))
-		parejasCompetencias.append((c, triosResultadosAprendizaje))
-	form = CursoForm(instance = curso)
-	data = {'curso': curso, 'form': form, 'requisitos':requisitos, 'parejasCompetencias':parejasCompetencias}
-	template = get_template('plantillaCursosPre.html')
-	html  = template.render(data)
-	result = BytesIO()
-	pdf = pisa.pisaDocument(BytesIO(html.encode('utf-8')), result)
-	#return HttpResponse(html)
-	return HttpResponse(result.getvalue(), content_type='application/pdf')
+	if(request.user.is_authenticated):
+		curso = Curso.objects.get(codigo=codigo_curso)
+		requisitos = PreRequisito.objects.filter(curso=curso)
+		competencias = Competencia.objects.filter(curso=curso)
+		parejasCompetencias = []
+		for c in competencias:
+			resultadosAprendizaje = Resultado.objects.filter(competencia=c)
+			triosResultadosAprendizaje = []
+			for r in resultadosAprendizaje:
+				actividadesFormacion = ActividadF.objects.filter(resultado=r)
+				indicadoresLogro = Indicador.objects.filter(resultado=r)
+				parejasIndicadoresLogros = []
+				for i in indicadoresLogro:
+					actividadesEvaluacion = ActividadEvaluacion.objects.filter(indicador=i)
+					parejasIndicadoresLogros.append((i, actividadesEvaluacion))
+				triosResultadosAprendizaje.append((r, actividadesFormacion, parejasIndicadoresLogros))
+			parejasCompetencias.append((c, triosResultadosAprendizaje))
+		form = CursoForm(instance = curso)
+		data = {'curso': curso, 'form': form, 'requisitos':requisitos, 'parejasCompetencias':parejasCompetencias}
+		template = get_template('plantillaCursosPre.html')
+		html  = template.render(data)
+		result = BytesIO()
+		pdf = pisa.pisaDocument(BytesIO(html.encode('utf-8')), result)
+		#return HttpResponse(html)
+		return HttpResponse(result.getvalue(), content_type='application/pdf')
+	else:
+		return redirect('/login')
 
 class Factory:
 	def crearFormulario(self, tipo, request=None):
@@ -477,7 +517,6 @@ def gestionarCursos(request):
 		erroresCursos = []
 		for c in cursos:
 			erroresCursos.append(obtenerErroresCurso(c.codigo))
-		print(erroresCursos)
 		context = {
 			'cursos' : cursos,
 			'puedoeliminar' : request.user.profile.tipo == 'director',
