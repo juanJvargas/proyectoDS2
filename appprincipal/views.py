@@ -1447,7 +1447,7 @@ def gestionarPreRequisitos(request, codigo_curso):
 				context = {
 					'curso' : curso,
 					'preRequisitos' : preRequisitos,
-					'puedogestionar' : request.user.profile.tipo == 'profesor'
+					'puedogestionar' : request.user.profile.tipo == 'director'
 				}
 				return HttpResponse(template.render(context, request))
 		else:
@@ -1467,7 +1467,7 @@ def agregarPreRequisitos(request, codigo_curso):
 				'error': "El curso no Existe",
 			}
 			return HttpResponse(template.render(context, request))
-		if(request.user.profile.tipo == 'profesor' and request.user.id == curso.docente_id):
+		if(request.user.profile.tipo == 'director'):
 			if(request.method == 'POST'):
 				cadena = request.POST.get('cursoSel', None)
 				arreglo = cadena.split("-")

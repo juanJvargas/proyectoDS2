@@ -43,13 +43,16 @@ class CursoForm(forms.ModelForm):
 		fields = '__all__'
 
 	def clean(self):
-		magistral = self.cleaned_data['horas_clase_magistral']
-		independiente = self.cleaned_data['horas_estudio_independiente']
-		cred = self.cleaned_data['creditos']
-		print(magistral)
-		print(independiente)
-		print(cred)
-		if(magistral + independiente != cred*3):
+		try:
+			magistral = self.cleaned_data['horas_clase_magistral']
+			independiente = self.cleaned_data['horas_estudio_independiente']
+			cred = self.cleaned_data['creditos']
+			print(magistral)
+			print(independiente)
+			print(cred)
+			if(magistral + independiente != cred*3):
+				raise forms.ValidationError("Verifique los creditos y las horas de trabajo individual y magistral. Recuerde que la ecuacion que representa la relacion es: Horas clase magistral + Horas de trabajo independiente = Numero de creditos * 3")
+		except Exception as e:
 			raise forms.ValidationError("Verifique los creditos y las horas de trabajo individual y magistral. Recuerde que la ecuacion que representa la relacion es: Horas clase magistral + Horas de trabajo independiente = Numero de creditos * 3")
 
 class UserForm(forms.ModelForm):

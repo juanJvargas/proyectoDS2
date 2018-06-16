@@ -30,7 +30,7 @@ class Programa(models.Model):
 	escuela = models.CharField(max_length=40, blank=False)
 	numero_semestres =  models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(12)], blank=False)
 	numero_creditos_graduacion = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(200)], blank=False)
-	director = models.ForeignKey(User, on_delete=models.CASCADE, default=False, blank=False)
+	director = models.ForeignKey(User, on_delete=models.CASCADE, default=False, blank=False, unique=True)
 
 	def __str__(self): 
 		return self.nombre_programa
@@ -94,8 +94,8 @@ class ActividadF(models.Model):
 	resultado= models.ForeignKey(Resultado, on_delete=models.CASCADE, default=False, blank=False)
 
 class PreRequisito(models.Model):
-	cursoP = models.ForeignKey(Curso, on_delete=models.CASCADE, default=False, related_name = 'requi', primary_key=True, blank=False)
-	curso = models.ForeignKey(Curso, on_delete=models.CASCADE, default=False, related_name= 'curs', blank=False)
+	cursoP = models.ForeignKey(Curso, on_delete=models.CASCADE, default=False, primary_key=True, unique=True)
+	curso = models.ForeignKey(Curso, on_delete=models.CASCADE, default=False, related_name= 'curs')
 
 	class META:
 		unique_together = (('cursoP', 'curso'),)
