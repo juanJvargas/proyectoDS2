@@ -4,6 +4,22 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.validators import MaxValueValidator, MinValueValidator 
 
+class SingletonModel(models.Model):
+
+    class Meta:
+        abstract = True
+
+    def save(self, *args, **kwargs):
+        self.pk = 1
+        super(SingletonModel, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        pass
+
+    @classmethod
+    def load(cls):
+        obj, created = cls.objects.get_or_create(pk=1)
+        return obj
 
 class Profile(models.Model):
 	user=models.OneToOneField(User, on_delete=models.CASCADE)
@@ -30,7 +46,7 @@ class Programa(models.Model):
 	escuela = models.CharField(max_length=40, blank=False)
 	numero_semestres =  models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(12)], blank=False)
 	numero_creditos_graduacion = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(200)], blank=False)
-	director = models.ForeignKey(User, on_delete=models.CASCADE, default=False, blank=False, unique=True)
+	director = models.ForeignKey(User, on_delete=models.CASCADE, default=False, blank=False)
 
 	def __str__(self): 
 		return self.nombre_programa
@@ -94,7 +110,7 @@ class ActividadF(models.Model):
 	resultado= models.ForeignKey(Resultado, on_delete=models.CASCADE, default=False, blank=False)
 
 class PreRequisito(models.Model):
-	cursoP = models.ForeignKey(Curso, on_delete=models.CASCADE, default=False, primary_key=True, unique=True)
+	cursoP = models.ForeignKey(Curso, on_delete=models.CASCADE, default=False, primary_key=True)
 	curso = models.ForeignKey(Curso, on_delete=models.CASCADE, default=False, related_name= 'curs')
 
 	class META:

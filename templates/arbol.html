@@ -1,0 +1,173 @@
+{% extends "index.html" %}
+{% load material_form %} 
+
+
+{% block content %}
+  
+<style type="text/css">
+
+
+.organigrama * {
+  margin: 0px;
+  padding: 0px;
+}
+
+.organigrama ul {
+    padding-top: 20px;
+  position: relative;
+}
+
+.organigrama li {
+    float: left;
+  text-align: center;
+    list-style-type: none;
+    padding: 20px 5px 0px 5px;
+  position: relative;
+}
+
+.organigrama li::before, .organigrama li::after {
+    content: '';
+    position: absolute;
+  top: 0px;
+  right: 50%;
+    border-top: 1px solid #f80;
+    width: 50%;
+  height: 20px;
+}
+
+.organigrama li::after{
+    right: auto;
+  left: 50%;
+    border-left: 1px solid #f80;
+}
+
+.organigrama li:only-child::before, .organigrama li:only-child::after {
+    display: none;
+}
+
+.organigrama li:only-child {
+  padding-top: 0;
+}
+
+.organigrama li:first-child::before, .organigrama li:last-child::after{
+    border: 0 none;
+}
+
+.organigrama li:last-child::before{
+    border-right: 1px solid #f80;
+    -webkit-border-radius: 0 5px 0 0;
+    -moz-border-radius: 0 5px 0 0;
+    border-radius: 0 5px 0 0;
+}
+
+.organigrama li:first-child::after{
+    border-radius: 5px 0 0 0;
+    -webkit-border-radius: 5px 0 0 0;
+    -moz-border-radius: 5px 0 0 0;
+}
+
+.organigrama ul ul::before {
+    content: '';
+    position: absolute;
+  top: 0;
+  left: 50%;
+    border-left: 1px solid #f80;
+    width: 0;
+  height: 20px;
+}
+
+.organigrama li a {
+    border: 1px solid #f80;
+    padding: 1em 0.75em;
+    text-decoration: none;
+    color: #333;
+  background-color: rgba(255,255,255,0.5);
+    font-family: arial, verdana, tahoma;
+    font-size: 0.85em;
+    display: inline-block;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+  -webkit-transition: all 500ms;
+  -moz-transition: all 500ms;
+  transition: all 500ms;
+}
+
+.organigrama li a:hover {
+    border: 1px solid #fff;
+    color: #ddd;
+  background-color: rgba(255,128,0,0.7);
+    display: inline-block;
+}
+
+.organigrama > ul > li > a {
+  font-size: 1em;
+  font-weight: bold;
+}
+
+.organigrama > ul > li > ul > li > a {
+  width: 8em;
+}
+
+
+</style>
+    <a href="/cursos" title="Informacion">
+        <font color="red"><i class="small material-icons">arrow_back</i></font>
+    </a>  
+        <div class="organigrama">
+            <ul>
+                <li>
+                    <a href="/cursos/consultar/{{curso.codigo}}">
+                        {{curso.nombre}} - {{curso.codigo}}
+                    </a>
+                    
+                    <ul>
+                        {% for pc in parejasCompetencias %}
+                        <li>
+                            <a href="/competencia/consultar/{{pc.0.id}}">
+                                {{ pc.0.nombre }}, {{ pc.0.descripcion }}
+                            </a>
+                            <ul>
+                                {% for trios in pc.1 %} 
+                                <li>
+                                    <a href="/resultados/consultar/{{trios.0.id}}">
+                                        {{trios.0.verbo}} {{trios.0.contenido}} {{trios.0.contexto}} {{trios.0.proposito}}
+                                    </a>
+                                    <ul>
+                                        {% for indi in trios.2 %} 
+                                        <li>
+                                            <a href="/indicadores/consultar/{{indi.0.id}}">
+                                                {{indi.0.habilidad}} {{indi.0.contenido}} {{indi.0.contexto}}
+                                            </a>
+                                            <ul>
+                                                {% for actE in indi.1 %} 
+                                                <li>
+                                                    <a href="/actividadesEva/consultar/{{actE.id}}">
+                                                        {{actE.nombre}} {{actE.description}}
+                                                    </a>
+                                                </li>
+                                                {% endfor %}
+                                            </ul>
+                                        </li>  
+                                        {% endfor %}
+                                        {% for act in trios.1 %} 
+                                        <li>
+                                            <a href="/actividadesF/consultar/{{act.id}}">
+                                                {{act.nombre}}: {{act.descripcion}}
+                                            </a>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            </ul>
+            
+        </div>
+       
+
+{% endblock %}

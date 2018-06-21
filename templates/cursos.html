@@ -38,7 +38,7 @@
 
 					<td>
 					<a href="/prerequisitos/{{ curso.codigo }}" title="prerequisitos"> 
-						<font color="red"><i class="small material-icons">library_books</i></font>
+						<font color="red"><i class="small material-icons">dns</i></font>
 					</a>
 					</td>
 					{% if puedoeliminar %}
@@ -58,8 +58,13 @@
 				{% endif %}
 				
 				<td>
-				<a href="/descargarpdfcurso/{{ curso.codigo }}" title="Informacion"> 
+				<a href="/descargarpdfcurso/{{ curso.codigo }}" title="Reporte Tablas"> 
 					<font color="red"><i class="small material-icons">cloud_download</i></font>
+				</a>
+				</td>
+				<td>
+				<a href="/reporteGrafico/{{ curso.codigo }}" title="Reporte Grafico"> 
+					<font color="red"><i class="small material-icons">perm_media</i></font>
 				</a>
 				</td>
 			</tr>

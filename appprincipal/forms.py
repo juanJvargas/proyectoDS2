@@ -6,6 +6,7 @@ from .models import *
 from django.contrib.auth.models import User
 
 
+
 class ProgramaForm(forms.ModelForm):
 	class Meta:
 		model = Programa
@@ -54,6 +55,7 @@ class CursoForm(forms.ModelForm):
 				raise forms.ValidationError("Verifique los creditos y las horas de trabajo individual y magistral. Recuerde que la ecuacion que representa la relacion es: Horas clase magistral + Horas de trabajo independiente = Numero de creditos * 3")
 		except Exception as e:
 			raise forms.ValidationError("Verifique los creditos y las horas de trabajo individual y magistral. Recuerde que la ecuacion que representa la relacion es: Horas clase magistral + Horas de trabajo independiente = Numero de creditos * 3")
+
 
 class UserForm(forms.ModelForm):
 	class Meta:

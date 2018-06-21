@@ -1,6 +1,9 @@
 {% extends "index.html" %}
 
 {% block content %}
+	<a href="/indicadores/gestionar/{{resultado.id}}" title="Informacion">
+        <font color="red"><i class="small material-icons">arrow_back</i></font>
+    </a> 
 	<h1 style="color:red"> Información del indicador </h1>
 	<table border="1">
 		{% for field in form.visible_fields %}

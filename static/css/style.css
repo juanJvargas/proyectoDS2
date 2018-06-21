@@ -76,6 +76,8 @@ body {
 }
 
 .derecha {
+  display:table;
+  margin-left:auto;
   margin-top: 10vh;
   width: 72vw;
   max-height: 150vh;
@@ -86,4 +88,3 @@ body {
 .contenido_derecha{
   margin: 25px;
 }
-

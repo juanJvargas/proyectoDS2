@@ -24,6 +24,35 @@ from django.template.loader import get_template
 from io import BytesIO
 from xhtml2pdf import pisa 
 
+
+def reporteGrafico(request, codigo_curso):
+	if(request.user.is_authenticated):
+		curso = Curso.objects.get(codigo=codigo_curso)
+		requisitos = PreRequisito.objects.filter(curso=curso)
+		competencias = Competencia.objects.filter(curso=curso)
+		parejasCompetencias = []
+		for c in competencias:
+			resultadosAprendizaje = Resultado.objects.filter(competencia=c)
+			triosResultadosAprendizaje = []
+			for r in resultadosAprendizaje:
+				actividadesFormacion = ActividadF.objects.filter(resultado=r)
+				indicadoresLogro = Indicador.objects.filter(resultado=r)
+				parejasIndicadoresLogros = []
+				for i in indicadoresLogro:
+					actividadesEvaluacion = ActividadEvaluacion.objects.filter(indicador=i)
+					parejasIndicadoresLogros.append((i, actividadesEvaluacion))
+				triosResultadosAprendizaje.append((r, actividadesFormacion, parejasIndicadoresLogros))
+			parejasCompetencias.append((c, triosResultadosAprendizaje))
+		template = loader.get_template('arbol.html')
+		print(parejasCompetencias)
+		context = {
+			'curso': curso, 
+			'parejasCompetencias': parejasCompetencias,
+		}
+		return HttpResponse(template.render(context, request))
+	else:
+		return redirect('/login')
+
 def descargarReporteCompetenciasPrograma(request, codigo_programa):
 	if(request.user.is_authenticated):
 		programa = Programa.objects.get(codigo=codigo_programa)
@@ -783,6 +812,7 @@ def consultarCompetencia(request,codigo_competencia):
 			template = loader.get_template('verCompetencias.html')
 			context = {
 				'form': form,
+				'curso': curso,
 				'competencia': competencia,
 			}
 			return HttpResponse(template.render(context, request))
@@ -819,6 +849,7 @@ def modificarCompetencia(request, codigo_competencia):
 					template = loader.get_template('modificarCompetencia.html')
 					context = {
 						'form' : form,
+						'curso': curso,
 						'competencia' : competencia
 					}
 					return HttpResponse(template.render(context, request))
@@ -829,6 +860,7 @@ def modificarCompetencia(request, codigo_competencia):
 				template = loader.get_template('modificarCompetencia.html')
 				context = {
 					'form' : form,
+					'curso': curso,
 					'competencia' : competencia
 				}
 			return HttpResponse(template.render(context, request))
@@ -862,6 +894,7 @@ def eliminarCompetencia(request, codigo_competencia):
 				template = loader.get_template('confirmar.html')
 				texto = "¿Seguro que desea borrar " + competencia.nombre + " ?:"
 				context = { #Diccionario que se le pasa al HTML
+				'curso': curso,
 				'texto' : texto
 				}
 				return HttpResponse(template.render(context, request))
@@ -893,6 +926,7 @@ def gestionarResultados(request, codigo_competencia):
 				context = {
 					'competencia' : competencia,
 					'resultados' : resultados,
+					'curso': curso,
 					'puedogestionar' : request.user.profile.tipo == 'profesor'
 				}
 				return HttpResponse(template.render(context, request))
@@ -962,6 +996,7 @@ def consultarResultado(request, codigo_resultado):
 			form.fields['competencia'].widget = forms.HiddenInput()
 			context = {
 				'form': form,
+				'competencia':competencia,
 				'resultado': resultado,
 			}
 			return HttpResponse(template.render(context, request))
@@ -998,6 +1033,7 @@ def modificarResultado(request, codigo_resultado):
 					template = loader.get_template('modificarResultado.html')
 					context = {
 						'form' : form,
+						'competencia':competencia,
 						'resultado' : resultado
 					}
 					return HttpResponse(template.render(context, request))
@@ -1074,6 +1110,7 @@ def gestionarIndicadores(request, codigo_resultado):
 				context = {
 					'indicadores' : indicadores,
 					'resultado' : resultado,
+					'competencia':competencia,
 					'puedogestionar' : request.user.profile.tipo == 'profesor'
 				}
 				return HttpResponse(template.render(context, request))
@@ -1112,7 +1149,7 @@ def agregarIndicador(request, codigo_resultado):
 			template = loader.get_template('agregarIndicador.html')
 			context = {
 				'form' : form,
-				'resultado' : resultado
+				'resultado' : resultado,
 			}
 			return HttpResponse(template.render(context, request))
 			
@@ -1145,6 +1182,7 @@ def consultarIndicador(request, codigo_indicador):
 			form.fields['resultado'].widget = forms.HiddenInput()
 			context = {
 				'form': form,
+				'resultado' : resultado,
 				'indicador': indicador,
 			}
 			return HttpResponse(template.render(context, request))
@@ -1183,6 +1221,7 @@ def modificarIndicador(request, codigo_indicador):#acomodar despues
 					template = loader.get_template('modificarIndicador.html')
 					context = {
 						'form' : form,
+						'resultado' : resultado,
 						'indicador' : indicador
 					}
 					return HttpResponse(template.render(context, request))
@@ -1193,6 +1232,7 @@ def modificarIndicador(request, codigo_indicador):#acomodar despues
 				template = loader.get_template('modificarIndicador.html')
 				context = {
 					'form' : form,
+					'resultado' : resultado,
 					'indicador' : indicador
 				}
 			return HttpResponse(template.render(context, request))
@@ -1261,6 +1301,7 @@ def gestionarActividadesF(request, codigo_resultado):
 				context = {
 					'actividades' : actividades,
 					'resultado' : resultado,
+					'competencia':competencia,
 					'puedogestionar' : request.user.profile.tipo == 'profesor'
 				}
 				return HttpResponse(template.render(context, request))
@@ -1299,6 +1340,7 @@ def agregarActividadesF(request, codigo_resultado):
 			template = loader.get_template('agregarActividadF.html')
 			context = {
 				'form' : form,
+				'resultado':resultado,
 				'resultado' : resultado
 			}
 			return HttpResponse(template.render(context, request))
@@ -1332,6 +1374,7 @@ def consultarActividadF(request, codigo_actividad):
 			form.fields['resultado'].widget = forms.HiddenInput()
 			context = {
 				'form': form,
+				'resultado':resultado,
 				'actividad': actividad,
 			}
 			return HttpResponse(template.render(context, request))
@@ -1366,9 +1409,10 @@ def modificarActividadF(request, codigo_actividad):#acomodar despues
 					form.save()
 					return HttpResponseRedirect('/cursos')
 				else:
-					template = loader.get_template('modificarIndicador.html')
+					template = loader.get_template('modificicarActividadF.html')
 					context = {
 						'form' : form,
+						'resultado':resultado,
 						'actividad' : actividad
 					}
 					return HttpResponse(template.render(context, request))
@@ -1376,9 +1420,10 @@ def modificarActividadF(request, codigo_actividad):#acomodar despues
 				form = ActividadFForm(instance = actividad)
 				form.fields['resultado'].initial = actividad.resultado_id 
 				form.fields['resultado'].widget = forms.HiddenInput()
-				template = loader.get_template('modificarIndicador.html')
+				template = loader.get_template('modificarActividadF.html')
 				context = {
 					'form' : form,
+					'resultado':resultado,
 					'actividad' : actividad
 				}
 			return HttpResponse(template.render(context, request))
@@ -1581,6 +1626,7 @@ def gestionarActividadesEva(request, codigo_indicador):
 				template = loader.get_template('actividadesEva.html')
 				context = {
 					'actividadesE' : actividadesE,
+					'resultado':resultado,
 					'indicador' : indicador,
 					'puedogestionar' : request.user.profile.tipo == 'profesor'
 				}
@@ -1618,7 +1664,7 @@ def agregarActividadesEva(request, codigo_indicador):
 				form = factory.crearFormulario('actividadEva')
 				form.fields['indicador'].initial = indicador.id
 				form.fields['indicador'].widget = forms.HiddenInput()
-			template = loader.get_template('agregarActividadF.html')
+			template = loader.get_template('agregarActividadEva.html')
 			context = {
 				'form' : form,
 				'indicador' : indicador,
@@ -1657,6 +1703,7 @@ def consultarActividadesEva(request, codigo_actividadE):
 			context = {
 				'form': form,
 				'actividadE': actividadE,
+				'indicador' : indicador,
 			}
 			return HttpResponse(template.render(context, request))
 		else:
@@ -1695,6 +1742,7 @@ def modificarActividadesEva(request, codigo_actividadE):
 					template = loader.get_template('modificarActividadEva.html')
 					context = {
 						'form' : form,
+						'indicador' : indicador,
 					}
 					return HttpResponse(template.render(context, request))
 			else:
@@ -1704,6 +1752,7 @@ def modificarActividadesEva(request, codigo_actividadE):
 				template = loader.get_template('modificarActividadEva.html')
 				context = {
 					'form' : form,
+					'indicador' : indicador,
 				}
 			return HttpResponse(template.render(context, request))
 		else:

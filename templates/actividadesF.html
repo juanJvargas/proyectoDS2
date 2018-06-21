@@ -1,7 +1,10 @@
 {% extends "index.html" %}
 
 {% block content %}
-	<h1 style="color:red">
+	<a href="/resultados/gestionar/{{competencia.id}}" title="Informacion">
+        <font color="red"><i class="small material-icons">arrow_back</i></font>
+    </a> 
+	<h1 style="color:red"> 
 		Gestion de Actividades de Formacion del Resultado de Aprendizaje {{resultado.nombre}}
 	</h1>
 	<table border="1">

@@ -58,5 +58,6 @@ urlpatterns = [
 	path('actividadesEva/eliminar/<codigo_actividadE>', views.eliminarActividadesEva),
 	path('descargarpdfcurso/<codigo_curso>', views.descargarpdfcurso),
 	path('descargarReporteCompetenciasPrograma/<codigo_programa>', views.descargarReporteCompetenciasPrograma),
+	path('reporteGrafico/<codigo_curso>', views.reporteGrafico),
 
 ]

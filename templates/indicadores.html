@@ -1,6 +1,9 @@
 {% extends "index.html" %}
 
 {% block content %}
+	<a href="/resultados/gestionar/{{resultado.id}}" title="Informacion">
+        <font color="red"><i class="small material-icons">arrow_back</i></font>
+    </a> 
 	<h1 style="color:red">
 		Gestion de Indicadores de logro del Resultado de Aprendizaje {{resultado.nombre}}:
 	</h1>
@@ -24,17 +27,20 @@
 					<font color="red"><i class="small material-icons">info</i></font>
 				</a>
 				</td>
-				<td>
-				<a href="/actividadesEva/gestionar/{{ indicador.id }}" title="Resultados de aprendizaje"> 
-					<font color="red"><i color="red" class="small material-icons">storage</i></font>
-				</a> 
-				</td>
 				{% if puedogestionar %}
 				<!--Agregar funcionalidad para agregar profesores a un curso-->
 				<td>
 				<a href="/indicadores/editar/{{indicador.id}}" title="Editar"> 
 					<font color="red"><i class="small material-icons">edit</i> </font>
 				</a>
+				</td>
+				{% endif %}
+				<td>
+				<a href="/actividadesEva/gestionar/{{ indicador.id }}" title="Acticidades de Evaluacion"> 
+					<font color="red"><i color="red" class="small material-icons">storage</i></font>
+				</a> 
+				</td>
+				{% if puedogestionar %}
 				<td>
 				<a href="/indicadores/eliminar/{{indicador.id}}" title="Eliminar"> 
 					<font color="red"><i color="red" class="small material-icons">delete</i></font>
