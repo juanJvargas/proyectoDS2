@@ -76,7 +76,6 @@ body {
 }
 
 .derecha {
-  display:table;
   margin-left:auto;
   margin-top: 10vh;
   width: 72vw;
@@ -87,4 +86,8 @@ body {
 
 .contenido_derecha{
   margin: 25px;
+}
+.cuadradoArbol{
+  margin: 0 auto;
+  width: 200px;
 }
